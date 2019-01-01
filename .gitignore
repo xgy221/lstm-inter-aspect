@@ -1,0 +1,9 @@
+.DS_Store
+data
+.idea
+SemEval2015
+SemEval2014
+cache
+tensorboard
+models
+__pycache__
