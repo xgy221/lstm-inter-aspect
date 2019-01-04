@@ -3,11 +3,12 @@ from xml.dom.minidom import parse
 import xml.dom.minidom
 import os
 import re
+import matplotlib.pyplot as plt
 
 
 def deal_glove():
     """
-    处理glove
+    处理glove, 生成中间变量
     """
     words = []
     wordVectors = []
@@ -19,63 +20,10 @@ def deal_glove():
             wordVectors.append(list(map(float, line[1:])))
 
     # 存储结果
-    # words = np.array(words)
-    # np.save('lstm-simple/cache/words.npy', words)
-    # wordVectors = np.array(wordVectors, dtype=np.float32)
-    # np.save('lstm-simple/cache/wordVectors.npy', wordVectors)
-
-
-def deal_absa_2015_restaurants_trial():
-    """
-    处理restaurants
-    """
-    # dom_tree = xml.dom.minidom.parse("SemEval2015/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml")
-    dom_tree = xml.dom.minidom.parse("SemEval2015/absa-2015_restaurants_trial.xml")
-
-    sentences = list()
-    _sentences = dom_tree.getElementsByTagName('sentence')
-    for sentence in _sentences:
-        _opinions = sentence.getElementsByTagName('Opinion')
-        opinions = list()
-        for opinion in _opinions:
-            opinions.append({
-                'target': opinion.getAttribute('target'),
-                'category': opinion.getAttribute('category'),
-                'polarity': opinion.getAttribute('polarity'),
-                'from': opinion.getAttribute('from'),
-                'to': opinion.getAttribute('to'),
-            })
-        sentences.append({
-            'id': sentence.getAttribute('id'),
-            'text': sentence.getElementsByTagName('text')[0].firstChild.nodeValue,
-            'opinions': opinions
-        })
-    return sentences
-
-
-def restaurants_train():
-    # dom_tree = xml.dom.minidom.parse("SemEval2015/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml")
-    dom_tree = xml.dom.minidom.parse(
-        os.path.split(os.path.realpath(__file__))[0] + "/SemEval2014/Restaurants_Train.xml")
-
-    sentences = list()
-    _sentences = dom_tree.getElementsByTagName('sentence')
-    for sentence in _sentences:
-        _aspectTerms = sentence.getElementsByTagName('aspectTerm')
-        aspectTerms = list()
-        for aspectTerm in _aspectTerms:
-            aspectTerms.append({
-                'term': aspectTerm.getAttribute('term'),
-                'polarity': aspectTerm.getAttribute('polarity'),
-                'from': aspectTerm.getAttribute('from'),
-                'to': aspectTerm.getAttribute('to'),
-            })
-        sentences.append({
-            'id': sentence.getAttribute('id'),
-            'text': sentence.getElementsByTagName('text')[0].firstChild.nodeValue,
-            'aspectTerms': aspectTerms
-        })
-    return sentences
+    words = np.array(words)
+    np.save('lstm-simple/cache/words.npy', words)
+    wordVectors = np.array(wordVectors, dtype=np.float32)
+    np.save('lstm-simple/cache/wordVectors.npy', wordVectors)
 
 
 def sentiment2num(sen):
@@ -106,18 +54,19 @@ def restaurants_train_new():
     return sentences
 
 
-def cleanSentences(string):
-    # Removes punctuation, parentheses, question marks, etc., and leaves only alphanumeric characters
-    strip_special_chars = re.compile("[^A-Za-z0-9 ]+")
-    string = string.lower().replace("<br />", " ")
-    return re.sub(strip_special_chars, "", string.lower())
+def show_sentence_len_graph():
+    """
+    最终决定maxSeqLength = 30 比较合理
+    :return:
+    """
+    sentences = restaurants_train_new()
+    numWords = []
+    for sentence in sentences:
+        numWords.append(len(str(sentence['text']).split()))
 
+    print('count:' + str(len(numWords)))
 
-# res = deal_absa_2015_restaurants_trial()
-# res = restaurants_train()
-
-# import tensorflow as tf
-#
-# normal = tf.truncated_normal([25, 2])
-#
-a = 1
+    plt.hist(numWords, 50)
+    plt.xlabel('Sequence Length')
+    plt.ylabel('Frequency')
+    plt.show()
