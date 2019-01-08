@@ -21,9 +21,9 @@ def deal_glove():
 
     # 存储结果
     words = np.array(words)
-    np.save('lstm-simple/cache/words.npy', words)
+    np.save('lstmSimple/cache/words.npy', words)
     wordVectors = np.array(wordVectors, dtype=np.float32)
-    np.save('lstm-simple/cache/wordVectors.npy', wordVectors)
+    np.save('lstmSimple/cache/wordVectors.npy', wordVectors)
 
 
 def sentiment2num(sen):
