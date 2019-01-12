@@ -5,7 +5,7 @@ import numpy as np
 import random
 import format
 
-sentences = format.restaurants_train_new()
+sentences = format.get_train_sentences()
 ln = xgy.ThreeLSTM()
 
 # ---    train start, 构造输入和输出，feed到网络里，训练

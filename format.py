@@ -54,6 +54,18 @@ def restaurants_train_new():
     return sentences
 
 
+def get_train_sentences():
+    sentences = restaurants_train_new()
+
+    return sentences[:int(len(sentences) * 0.9)]
+
+
+def get_test_sentences():
+    sentences = restaurants_train_new()
+
+    return sentences[int(len(sentences) * 0.9):]
+
+
 def show_sentence_len_graph():
     """
     最终决定maxSeqLength = 30 比较合理

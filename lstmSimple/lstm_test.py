@@ -5,7 +5,7 @@ import numpy as np
 import random
 import format
 
-sentences = format.restaurants_train_new()
+sentences = format.get_test_sentences()
 ln = xgy.ThreeLSTM()
 
 sess = tf.InteractiveSession()
@@ -38,11 +38,12 @@ for a in ln.aspects:
     feedDict[ln.cv[a + '_w']] = aspect_w
 
 # 开始执行指定次数的迭代
-for i in range(10):
+res = []
+for i in range(int(len(sentences) / ln.batchSize)):
     # ----------------------------------------------------构造句子输入和label输入
 
     # 随机从句子中取 batchSize 个作为本次训练的输入句子
-    ss = random.sample(sentences, ln.batchSize)
+    ss = sentences[i * ln.batchSize: (i + 1) * ln.batchSize]
 
     batchLabels = np.zeros([ln.batchSize, len(ln.aspects), 3])
     aspect_s = np.zeros([ln.batchSize, ln.maxSeqLength])
@@ -73,3 +74,5 @@ for i in range(10):
     feedDict[ln.labels] = batchLabels
 
     print("Accuracy for this batch:", (sess.run(ln.accuracy, feedDict)) * 100)
+    res.append((sess.run(ln.accuracy, feedDict)) * 100)
+print('avg:', np.mean(res))
